@@ -7,6 +7,9 @@
 class UButton;
 class UWidgetSwitcher;
 class UWidget;
+class UTextBlock;
+class UEditableTextBox;
+class UCheckBox;
 
 UCLASS()
 class BOMBTAG_API UMainMenuWidget : public UUserWidget
@@ -15,6 +18,7 @@ class BOMBTAG_API UMainMenuWidget : public UUserWidget
 	
 protected:
     virtual bool Initialize() override;
+    virtual void NativeConstruct() override;
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UWidgetSwitcher> MenuSwitcher;
@@ -47,10 +51,34 @@ protected:
     TObjectPtr<UButton> MyRecordButton;
 
     UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UTextBlock> MatchMenuTextBlock;
+
+    UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> MatchMenuBackButton;
 
     UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UEditableTextBox> HostMenuTitleTextBox;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UEditableTextBox> HostMenuPasswordTextBox;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UCheckBox> HostMenuPasswordCheckBox;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UButton> HostMenuCreateButton;
+
+    UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> HostMenuBackButton;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UEditableTextBox> JoinMenuTitleTextBox;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UEditableTextBox> JoinMenuPasswordTextBox;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UButton> JoinMenuJoinButton;
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> JoinMenuBackButton;
@@ -72,4 +100,17 @@ protected:
 
     UFUNCTION()
     void OpenMainMenu();
+
+    UFUNCTION()
+    void CreateMatch();
+
+    UFUNCTION()
+    void UpdateDots();
+
+    UFUNCTION()
+    void JoinMatch();
+
+private:
+    FTimerHandle DotsTimerHandle;
+    int32 DotCount = 1;
 };

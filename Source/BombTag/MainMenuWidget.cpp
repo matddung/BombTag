@@ -3,6 +3,7 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/Widget.h"
+#include "Components/TextBlock.h"
 
 bool UMainMenuWidget::Initialize()
 {
@@ -38,6 +39,11 @@ bool UMainMenuWidget::Initialize()
         MatchMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
     }
 
+    if (HostMenuCreateButton)
+    {
+        HostMenuCreateButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateMatch);
+    }
+
     if (HostMenuBackButton)
     {
         HostMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
@@ -54,6 +60,15 @@ bool UMainMenuWidget::Initialize()
     }
 
     return true;
+}
+
+void UMainMenuWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+
+    GetWorld()->GetTimerManager().SetTimer(
+        DotsTimerHandle, this, &UMainMenuWidget::UpdateDots, 0.4f, true
+    );
 }
 
 void UMainMenuWidget::OpenMatchMenu()
@@ -94,4 +109,23 @@ void UMainMenuWidget::OpenMainMenu()
     {
         MenuSwitcher->SetActiveWidget(MainMenu);
     }
+}
+
+void UMainMenuWidget::CreateMatch()
+{
+
+}
+
+void UMainMenuWidget::UpdateDots()
+{
+    DotCount = (DotCount % 3) + 1;
+    const FString Dots = FString::ChrN(DotCount, TEXT('.'));
+    const FText Base = NSLOCTEXT("Match", "Searching", "Searching for Match");
+    const FText Final = FText::FromString(Base.ToString() + Dots);
+    if (MatchMenuTextBlock) { MatchMenuTextBlock->SetText(Final); }
+}
+
+void UMainMenuWidget::JoinMatch()
+{
+
 }

@@ -39,6 +39,9 @@ protected:
     TObjectPtr<UWidget> MyRecordMenu;
 
     UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UWidget> HostWaitingMenu;
+
+    UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> MatchButton;
 
     UPROPERTY(meta = (BindWidget))
@@ -86,6 +89,15 @@ protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> MyRecordMenuBackButton;
 
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UTextBlock> HostWaitingMenuTextBlock;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UButton> HostWaitingMenuStartButton;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UButton> HostWaitingMenuBackButton;
+
     UFUNCTION()
     void OpenMatchMenu();
 
@@ -105,10 +117,19 @@ protected:
     void CreateMatch();
 
     UFUNCTION()
-    void UpdateDots();
+    void UpdateMatchMenuDots();
 
     UFUNCTION()
     void JoinMatch();
+
+    UFUNCTION()
+    void OnHostMenuPasswordCheckBoxChanged(bool bIsChecked);
+
+    UFUNCTION()
+    void UpdateHostWaitingMenuDots();
+
+    UFUNCTION()
+    void HostMatchStart();
 
 private:
     FTimerHandle DotsTimerHandle;

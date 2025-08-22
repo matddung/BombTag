@@ -65,6 +65,8 @@ void ABombTagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABombTagCharacter::Look);
+
+		EnhancedInputComponent->BindAction(Interact, ETriggerEvent::Started, this, &ABombTagCharacter::DoInteract);
 	}
 	else
 	{
@@ -130,4 +132,9 @@ void ABombTagCharacter::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+void ABombTagCharacter::DoInteract()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Interact"));
 }

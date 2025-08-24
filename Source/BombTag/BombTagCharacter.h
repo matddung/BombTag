@@ -10,6 +10,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UStaticMeshComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -30,6 +31,9 @@ class ABombTagCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* BombIndicator;
 	
 protected:
 
@@ -51,6 +55,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* Interact;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bomb", meta = (AllowPrivateAccess = "true"))
+	bool bHasBomb;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Bomb")
+	float BombTransferDistance = 100;
 
 public:
 
@@ -90,6 +100,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void DoInteract();
+
+	UFUNCTION(BlueprintCallable, Category = "Bomb")
+	void SetHasBomb(bool bNewHasBomb);
+
+	UFUNCTION(BlueprintPure, Category = "Bomb")
+	bool HasBomb() const { return bHasBomb; }
 
 public:
 

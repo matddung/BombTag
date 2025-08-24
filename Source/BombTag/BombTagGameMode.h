@@ -18,7 +18,16 @@ public:
 	
 	/** Constructor */
 	ABombTagGameMode();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnGameTimerExpired();
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	float GameDuration = 30;
+
+	FTimerHandle GameTimerHandle;
 };
-
-
-

@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "BombTag.h"
+#include "EngineUtils.h"
 
 ABombTagCharacter::ABombTagCharacter()
 {
@@ -48,6 +49,13 @@ ABombTagCharacter::ABombTagCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	BombIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BombIndicator"));
+	BombIndicator->SetupAttachment(RootComponent);
+	BombIndicator->SetRelativeLocation(FVector(0.f, 0.f, 120.f));
+	BombIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BombIndicator->SetVisibility(false);
+
+	bHasBomb = false;
 }
 
 void ABombTagCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -136,5 +144,38 @@ void ABombTagCharacter::DoJumpEnd()
 
 void ABombTagCharacter::DoInteract()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Interact"));
+	if (!bHasBomb)
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	for (TActorIterator<ABombTagCharacter> It(World); It; ++It)
+	{
+		ABombTagCharacter* Other = *It;
+		if (Other && Other != this && !Other->HasBomb())
+		{
+			const float DistSq = FVector::DistSquared(Other->GetActorLocation(), GetActorLocation());
+			if (DistSq <= FMath::Square(BombTransferDistance))
+			{
+				SetHasBomb(false);
+				Other->SetHasBomb(true);
+				break;
+			}
+		}
+	}
+}
+
+void ABombTagCharacter::SetHasBomb(bool bNewHasBomb)
+{
+	bHasBomb = bNewHasBomb;
+	if (BombIndicator)
+	{
+		BombIndicator->SetVisibility(bHasBomb);
+	}
 }

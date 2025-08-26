@@ -19,6 +19,8 @@ protected:
 	UFUNCTION()
 	void OnGameTimerExpired();
 
+	void StartNewRound();
+
 public:
 	UFUNCTION(BlueprintPure, Category = "Game")
 	float GetRemainingGameTime() const;

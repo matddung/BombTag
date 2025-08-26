@@ -65,7 +65,7 @@ protected:
 public:
 
 	/** Constructor */
-	ABombTagCharacter();	
+	ABombTagCharacter();
 
 protected:
 

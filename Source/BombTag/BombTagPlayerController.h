@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,37 +6,44 @@
 
 class UInputMappingContext;
 class UUserWidget;
+class UTextBlock;
+class UBorder;
 
-/**
- *  Basic PlayerController class for a third person game
- *  Manages input mappings
- */
 UCLASS(abstract)
 class ABombTagPlayerController : public APlayerController
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
+public:
+    ABombTagPlayerController();
+
 protected:
+    UPROPERTY(EditAnywhere, Category = "Input|Input Mappings")
+    TArray<UInputMappingContext*> DefaultMappingContexts;
 
-	/** Input Mapping Contexts */
-	UPROPERTY(EditAnywhere, Category ="Input|Input Mappings")
-	TArray<UInputMappingContext*> DefaultMappingContexts;
+    UPROPERTY(EditAnywhere, Category = "Input|Input Mappings")
+    TArray<UInputMappingContext*> MobileExcludedMappingContexts;
 
-	/** Input Mapping Contexts */
-	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
-	TArray<UInputMappingContext*> MobileExcludedMappingContexts;
+    UPROPERTY(EditAnywhere, Category = "Input|Touch Controls")
+    TSubclassOf<UUserWidget> MobileControlsWidgetClass;
 
-	/** Mobile controls widget to spawn */
-	UPROPERTY(EditAnywhere, Category="Input|Touch Controls")
-	TSubclassOf<UUserWidget> MobileControlsWidgetClass;
+    TObjectPtr<UUserWidget> MobileControlsWidget;
 
-	/** Pointer to the mobile controls widget */
-	TObjectPtr<UUserWidget> MobileControlsWidget;
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<UUserWidget> HUDWidgetClass;
 
-	/** Gameplay initialization */
-	virtual void BeginPlay() override;
+    TObjectPtr<UUserWidget> HUDWidget;
 
-	/** Input mapping context setup */
-	virtual void SetupInputComponent() override;
+    TObjectPtr<UTextBlock> TimerText;
+
+    TObjectPtr<UBorder> BorderFlash;
+
+    float BorderFlashElapsed = 0.f;
+
+    virtual void BeginPlay() override;
+
+    virtual void SetupInputComponent() override;
+
+    virtual void Tick(float DeltaSeconds) override;
 
 };

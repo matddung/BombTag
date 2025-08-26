@@ -6,7 +6,7 @@
 
 ABombTagGameMode::ABombTagGameMode()
 {
-	// stub
+	
 }
 
 void ABombTagGameMode::BeginPlay()
@@ -32,4 +32,9 @@ void ABombTagGameMode::OnGameTimerExpired()
 {
     UE_LOG(LogTemp, Warning, TEXT("Game over: time limit reached"));
     UGameplayStatics::SetGamePaused(this, true);
+}
+
+float ABombTagGameMode::GetRemainingGameTime() const
+{
+    return GetWorldTimerManager().GetTimerRemaining(GameTimerHandle);
 }

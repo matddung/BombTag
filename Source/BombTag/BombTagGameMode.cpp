@@ -1,5 +1,6 @@
 #include "BombTagGameMode.h"
 #include "BombTagCharacter.h"
+#include "BombTagStateBase.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
@@ -7,7 +8,7 @@
 
 ABombTagGameMode::ABombTagGameMode()
 {
-	
+    GameStateClass = ABombTagStateBase::StaticClass();
 }
 
 void ABombTagGameMode::BeginPlay()

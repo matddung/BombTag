@@ -56,7 +56,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* Interact;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Bomb", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(ReplicatedUsing = OnRep_HasBomb, BlueprintReadOnly, Category = "Bomb", meta = (AllowPrivateAccess = "true"))
 	bool bHasBomb;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bomb")
@@ -101,13 +101,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void DoInteract();
 
+	UFUNCTION(Server, Reliable)
+	void ServerDoInteract();
+
 	UFUNCTION(BlueprintCallable, Category = "Bomb")
 	void SetHasBomb(bool bNewHasBomb);
+
+	UFUNCTION()
+	void OnRep_HasBomb();
 
 	UFUNCTION(BlueprintPure, Category = "Bomb")
 	bool HasBomb() const { return bHasBomb; }
 
 public:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

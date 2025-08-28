@@ -10,6 +10,7 @@
 #include "Components/Border.h"
 #include "BombTagGameMode.h"
 #include "BombTagCharacter.h"
+#include "BombTagStateBase.h"
 
 ABombTagPlayerController::ABombTagPlayerController()
 {
@@ -87,9 +88,9 @@ void ABombTagPlayerController::Tick(float DeltaSeconds)
 
     if (TimerText)
     {
-        if (ABombTagGameMode* GM = GetWorld()->GetAuthGameMode<ABombTagGameMode>())
+        if (ABombTagStateBase* GS = GetWorld()->GetGameState<ABombTagStateBase>())
         {
-            const float Remaining = FMath::Max(0.f, GM->GetRemainingGameTime());
+            const float Remaining = FMath::Max(0.f, GS->GetRemainingGameTime());
             TimerText->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), Remaining)));
         }
     }

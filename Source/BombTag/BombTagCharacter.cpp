@@ -12,6 +12,7 @@
 #include "InputActionValue.h"
 #include "BombTag.h"
 #include "EngineUtils.h"
+#include "Net/UnrealNetwork.h"
 
 ABombTagCharacter::ABombTagCharacter()
 {
@@ -149,6 +150,12 @@ void ABombTagCharacter::DoInteract()
 		return;
 	}
 
+	if (!HasAuthority())
+	{
+		ServerDoInteract();
+		return;
+	}
+
 	UWorld* World = GetWorld();
 	if (!World)
 	{
@@ -174,8 +181,24 @@ void ABombTagCharacter::DoInteract()
 void ABombTagCharacter::SetHasBomb(bool bNewHasBomb)
 {
 	bHasBomb = bNewHasBomb;
+	OnRep_HasBomb();
+}
+
+void ABombTagCharacter::OnRep_HasBomb()
+{
 	if (BombIndicator)
 	{
 		BombIndicator->SetVisibility(bHasBomb);
 	}
+}
+
+void ABombTagCharacter::ServerDoInteract_Implementation()
+{
+	DoInteract();
+}
+
+void ABombTagCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABombTagCharacter, bHasBomb);
 }

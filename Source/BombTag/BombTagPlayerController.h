@@ -27,15 +27,19 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Input|Touch Controls")
     TSubclassOf<UUserWidget> MobileControlsWidgetClass;
 
+    UPROPERTY()
     TObjectPtr<UUserWidget> MobileControlsWidget;
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<UUserWidget> HUDWidgetClass;
 
+    UPROPERTY()
     TObjectPtr<UUserWidget> HUDWidget;
 
+    UPROPERTY()
     TObjectPtr<UTextBlock> TimerText;
 
+    UPROPERTY()
     TObjectPtr<UBorder> BorderFlash;
 
     float BorderFlashElapsed = 0.f;

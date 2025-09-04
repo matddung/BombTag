@@ -21,6 +21,12 @@ protected:
 
 	void StartNewRound();
 
+	void HandleStartCountdown();
+
+	void RespawnPlayers();
+
+	void BeginStartCountdown();
+
 public:
 	UFUNCTION(BlueprintPure, Category = "Game")
 	float GetRemainingGameTime() const;
@@ -29,5 +35,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	float GameDuration = 10;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	float StartDelay = 3.f;
+
 	FTimerHandle GameTimerHandle;
+	FTimerHandle CountdownTimerHandle;
+
+	int32 CountdownTime;
 };

@@ -5,6 +5,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "Engine/Engine.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerState.h"
+#include "EngineUtils.h"
 
 ABombTagGameMode::ABombTagGameMode()
 {
@@ -14,8 +17,7 @@ ABombTagGameMode::ABombTagGameMode()
 void ABombTagGameMode::BeginPlay()
 {
     Super::BeginPlay();
-
-    StartNewRound();
+    BeginStartCountdown();
 }
 
 void ABombTagGameMode::OnGameTimerExpired()
@@ -64,10 +66,15 @@ void ABombTagGameMode::OnGameTimerExpired()
 
     if (BombHolder)
     {
+        if (APlayerController* Controller = Cast<APlayerController>(BombHolder->GetController()))
+        {
+            Controller->StartSpectatingOnly();
+        }
         BombHolder->Destroy();
     }
 
-    StartNewRound();
+    RespawnPlayers();
+    BeginStartCountdown();
 }
 
 float ABombTagGameMode::GetRemainingGameTime() const
@@ -98,4 +105,57 @@ void ABombTagGameMode::StartNewRound()
         const int32 Index = FMath::RandRange(0, Characters.Num() - 1);
         Characters[Index]->SetHasBomb(true);
     }
+}
+
+void ABombTagGameMode::RespawnPlayers()
+{
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        APlayerController* PC = It->Get();
+        if (!PC)
+        {
+            continue;
+        }
+
+        if (APawn* Pawn = PC->GetPawn())
+        {
+            PC->UnPossess();
+            Pawn->Destroy();
+        }
+
+        if (PC->PlayerState && PC->PlayerState->IsSpectator())
+        {
+            continue;
+        }
+
+        RestartPlayer(PC);
+    }
+}
+
+void ABombTagGameMode::BeginStartCountdown()
+{
+    GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+    CountdownTime = FMath::CeilToInt(StartDelay);
+    GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ABombTagGameMode::HandleStartCountdown, 1.f, true);
+}
+
+void ABombTagGameMode::HandleStartCountdown()
+{
+    if (CountdownTime > 0)
+    {
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::FromInt(CountdownTime));
+        }
+        --CountdownTime;
+        return;
+    }
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("Go!"));
+    }
+
+    GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+    StartNewRound();
 }

@@ -11,6 +11,7 @@
 #include "BombTagGameMode.h"
 #include "BombTagCharacter.h"
 #include "BombTagStateBase.h"
+#include "ResultEntryWidget.h"
 
 ABombTagPlayerController::ABombTagPlayerController()
 {
@@ -20,6 +21,16 @@ ABombTagPlayerController::ABombTagPlayerController()
     if (HUDBPClass.Succeeded())
     {
         HUDWidgetClass = HUDBPClass.Class;
+    }
+}
+
+void ABombTagPlayerController::SetBorderFlashEnabled(bool bEnabled)
+{
+    bBorderFlashEnabled = bEnabled;
+    if (!bBorderFlashEnabled && BorderFlash)
+    {
+        BorderFlashElapsed = 0.f;
+        BorderFlash->SetRenderOpacity(0.f);
     }
 }
 
@@ -98,7 +109,7 @@ void ABombTagPlayerController::Tick(float DeltaSeconds)
     if (BorderFlash)
     {
         ABombTagCharacter* Ch = Cast<ABombTagCharacter>(GetPawn());
-        const bool bShouldFlash = Ch && Ch->HasBomb() && !GetWorld()->IsPaused();
+        const bool bShouldFlash = bBorderFlashEnabled && Ch && Ch->HasBomb() && !GetWorld()->IsPaused();
         if (bShouldFlash)
         {
             BorderFlashElapsed += DeltaSeconds;
@@ -109,6 +120,18 @@ void ABombTagPlayerController::Tick(float DeltaSeconds)
         {
             BorderFlashElapsed = 0.f;
             BorderFlash->SetRenderOpacity(0.f);
+        }
+    }
+}
+
+void ABombTagPlayerController::ClientShowResultScreen_Implementation(TSubclassOf<UResultEntryWidget> ResultWidgetClass, bool bWinner)
+{
+    if (ResultWidgetClass)
+    {
+        UResultEntryWidget* ResultWidget = CreateWidget<UResultEntryWidget>(this, ResultWidgetClass);
+        if (ResultWidget)
+        {
+            ResultWidget->AddToPlayerScreen();
         }
     }
 }

@@ -5,6 +5,7 @@
 ABombTagStateBase::ABombTagStateBase()
 {
     PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bTickEvenWhenPaused = true;
     bReplicates = true;
 }
 
@@ -19,6 +20,19 @@ void ABombTagStateBase::Tick(float DeltaSeconds)
             RemainingGameTime = GM->GetRemainingGameTime();
         }
     }
+}
+
+float ABombTagStateBase::GetRemainingGameTime() const
+{
+    if (HasAuthority())
+    {
+        if (const ABombTagGameMode* GM = GetWorld()->GetAuthGameMode<ABombTagGameMode>())
+        {
+            return GM->GetRemainingGameTime();
+        }
+    }
+
+    return RemainingGameTime;
 }
 
 void ABombTagStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

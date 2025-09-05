@@ -4,6 +4,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "BombTagGameMode.generated.h"
 
+class UResultEntryWidget;
+
 UCLASS(abstract)
 class ABombTagGameMode : public AGameModeBase
 {
@@ -37,6 +39,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	float StartDelay = 3.f;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UResultEntryWidget> ResultEntryWidgetClass;
 
 	FTimerHandle GameTimerHandle;
 	FTimerHandle CountdownTimerHandle;

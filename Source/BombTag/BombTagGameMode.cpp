@@ -1,6 +1,8 @@
 #include "BombTagGameMode.h"
 #include "BombTagCharacter.h"
 #include "BombTagStateBase.h"
+#include "ResultEntryWidget.h"
+#include "BombTagPlayerController.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
@@ -12,6 +14,12 @@
 ABombTagGameMode::ABombTagGameMode()
 {
     GameStateClass = ABombTagStateBase::StaticClass();
+
+    static ConstructorHelpers::FClassFinder<UResultEntryWidget> ResultEntryBPClass(TEXT("/Game/UI/WBP_ResultEntry"));
+    if (ResultEntryBPClass.Succeeded())
+    {
+        ResultEntryWidgetClass = ResultEntryBPClass.Class;
+    }
 }
 
 void ABombTagGameMode::BeginPlay()
@@ -41,18 +49,31 @@ void ABombTagGameMode::OnGameTimerExpired()
             GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("BOOM!"));
         }
 
+        TSet<APlayerController*> WinningControllers;
         for (ABombTagCharacter* Ch : Characters)
         {
-            const bool bWinner = !Ch->HasBomb();
-            if (APlayerController* PC = Cast<APlayerController>(Ch->GetController()))
+            if (!Ch->HasBomb())
             {
-                PC->ClientMessage(bWinner ? TEXT("WIN") : TEXT("Lose"));
+                if (APlayerController* PC = Cast<APlayerController>(Ch->GetController()))
+                {
+                    WinningControllers.Add(PC);
+                }
             }
         }
 
-        UGameplayStatics::SetGamePaused(this, true);
+        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            if (ABombTagPlayerController* PC = Cast<ABombTagPlayerController>(It->Get()))
+            {
+                const bool bWinner = WinningControllers.Contains(PC);
+                PC->ClientMessage(bWinner ? TEXT("WIN") : TEXT("Lose"));
+                PC->ClientShowResultScreen(ResultEntryWidgetClass, bWinner);
+            }
+        }
+
         return;
     }
+
 
     ABombTagCharacter* BombHolder = nullptr;
     for (ABombTagCharacter* Ch : Characters)
@@ -85,7 +106,7 @@ float ABombTagGameMode::GetRemainingGameTime() const
 void ABombTagGameMode::StartNewRound()
 {
     GetWorldTimerManager().ClearTimer(GameTimerHandle);
-    GetWorldTimerManager().SetTimer(GameTimerHandle, this, &ABombTagGameMode::OnGameTimerExpired, GameDuration);
+    GetWorldTimerManager().SetTimer(GameTimerHandle, this, &ABombTagGameMode::OnGameTimerExpired, GameDuration, false);
 
     TArray<AActor*> Actors;
     UGameplayStatics::GetAllActorsOfClass(this, ABombTagCharacter::StaticClass(), Actors);

@@ -15,7 +15,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintPure, Category = "Game")
-	float GetRemainingGameTime() const { return RemainingGameTime; }
+	float GetRemainingGameTime() const;
 
 protected:
 	UPROPERTY(Replicated)

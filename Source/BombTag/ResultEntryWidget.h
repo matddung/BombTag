@@ -25,4 +25,8 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* FourthIDText;
+
+protected:
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 };

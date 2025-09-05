@@ -8,6 +8,7 @@ class UInputMappingContext;
 class UUserWidget;
 class UTextBlock;
 class UBorder;
+class UResultEntryWidget;
 
 UCLASS(abstract)
 class ABombTagPlayerController : public APlayerController
@@ -16,6 +17,8 @@ class ABombTagPlayerController : public APlayerController
 
 public:
     ABombTagPlayerController();
+
+    void SetBorderFlashEnabled(bool bEnabled);
 
 protected:
     UPROPERTY(EditAnywhere, Category = "Input|Input Mappings")
@@ -43,6 +46,7 @@ protected:
     TObjectPtr<UBorder> BorderFlash;
 
     float BorderFlashElapsed = 0.f;
+    bool bBorderFlashEnabled = true;
 
     virtual void BeginPlay() override;
 
@@ -50,4 +54,7 @@ protected:
 
     virtual void Tick(float DeltaSeconds) override;
 
+public:
+    UFUNCTION(Client, Reliable)
+    void ClientShowResultScreen(TSubclassOf<UResultEntryWidget> ResultWidgetClass, bool bWinner);
 };

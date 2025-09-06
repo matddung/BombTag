@@ -34,14 +34,15 @@ void ABombTagPlayerController::SetBorderFlashEnabled(bool bEnabled)
     }
 }
 
-void ABombTagPlayerController::BeginPlay()
+void ABombTagPlayerController::ShowHUDWidget()
 {
-    Super::BeginPlay();
-
     if (IsLocalPlayerController() && HUDWidgetClass)
     {
-        HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-        if (HUDWidget)
+        if (!HUDWidget)
+        {
+            HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+        }
+        if (HUDWidget && !HUDWidget->IsInViewport())
         {
             HUDWidget->AddToPlayerScreen();
             TimerText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("TimerText")));
@@ -52,6 +53,13 @@ void ABombTagPlayerController::BeginPlay()
             }
         }
     }
+}
+
+void ABombTagPlayerController::BeginPlay()
+{
+    Super::BeginPlay();
+
+    ShowHUDWidget();
 
     if (SVirtualJoystick::ShouldDisplayTouchInterface() && IsLocalPlayerController())
     {
@@ -61,7 +69,7 @@ void ABombTagPlayerController::BeginPlay()
         {
             MobileControlsWidget->AddToPlayerScreen(0);
         }
-        else 
+        else
         {
             UE_LOG(LogBombTag, Error, TEXT("Could not spawn mobile controls widget."));
         }

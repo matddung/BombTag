@@ -20,6 +20,8 @@ public:
 
     void SetBorderFlashEnabled(bool bEnabled);
 
+    void ShowHUDWidget();
+
 protected:
     UPROPERTY(EditAnywhere, Category = "Input|Input Mappings")
     TArray<UInputMappingContext*> DefaultMappingContexts;

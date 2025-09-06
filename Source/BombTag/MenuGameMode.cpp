@@ -1,4 +1,5 @@
 #include "MenuGameMode.h"
+#include "BombTagPlayerController.h"
 
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
@@ -31,5 +32,10 @@ void AMenuGameMode::BeginPlay()
             PC->SetInputMode(InputMode);
             PC->bShowMouseCursor = true;
         }
+    }
+
+    if (ABombTagPlayerController* BTPC = Cast<ABombTagPlayerController>(PC))
+    {
+        BTPC->ShowHUDWidget();
     }
 }

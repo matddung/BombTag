@@ -5,6 +5,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 
 void UResultEntryWidget::NativeConstruct()
 {
@@ -81,4 +82,25 @@ void UResultEntryWidget::NativeDestruct()
     }
 
     Super::NativeDestruct();
+}
+
+FReply UResultEntryWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    OpenMenuMap();
+    return FReply::Handled();
+}
+
+FReply UResultEntryWidget::NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InTouchEvent)
+{
+    OpenMenuMap();
+    return FReply::Handled();
+}
+
+void UResultEntryWidget::OpenMenuMap()
+{
+    if (UWorld* World = GetWorld())
+    {
+        const FString Options = TEXT("game=/Script/BombTag.MenuGameMode");
+        UGameplayStatics::OpenLevel(World, FName(TEXT("/Game/Maps/MenuMap")), true, Options);
+    }
 }

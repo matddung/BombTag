@@ -83,13 +83,9 @@ void UMainMenuWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    GetWorld()->GetTimerManager().SetTimer(
-        DotsTimerHandle, this, &UMainMenuWidget::UpdateMatchMenuDots, 0.4f, true
-    );
+    GetWorld()->GetTimerManager().SetTimer(MatchDotsTimerHandle, this, &UMainMenuWidget::UpdateMatchMenuDots, 0.4f, true);
 
-    GetWorld()->GetTimerManager().SetTimer(
-        DotsTimerHandle, this, &UMainMenuWidget::UpdateHostWaitingMenuDots, 0.4f, true
-    );
+    GetWorld()->GetTimerManager().SetTimer(HostWaitingDotsTimerHandle, this, &UMainMenuWidget::UpdateHostWaitingMenuDots, 0.4f, true);
 
     if (HostMenuPasswordCheckBox)
     {
@@ -144,8 +140,8 @@ void UMainMenuWidget::CreateMatch()
 
 void UMainMenuWidget::UpdateMatchMenuDots()
 {
-    DotCount = (DotCount % 3) + 1;
-    const FString Dots = FString::ChrN(DotCount, TEXT('.'));
+    MatchDotCount = (MatchDotCount % 3) + 1;
+    const FString Dots = FString::ChrN(MatchDotCount, TEXT('.'));
     const FText Base = NSLOCTEXT("Match", "Searching", "Searching for Match");
     const FText Final = FText::FromString(Base.ToString() + Dots);
     if (MatchMenuTextBlock) { MatchMenuTextBlock->SetText(Final); }
@@ -166,8 +162,8 @@ void UMainMenuWidget::OnHostMenuPasswordCheckBoxChanged(bool bIsChecked)
 
 void UMainMenuWidget::UpdateHostWaitingMenuDots()
 {
-    DotCount = (DotCount % 3) + 1;
-    const FString Dots = FString::ChrN(DotCount, TEXT('.'));
+    HostWaitingDotCount = (HostWaitingDotCount % 3) + 1;
+    const FString Dots = FString::ChrN(HostWaitingDotCount, TEXT('.'));
     const FText Base = NSLOCTEXT("Match", "WaitingOther", "Waiting for Other");
     const FText Final = FText::FromString(Base.ToString() + Dots);
     if (HostWaitingMenuTextBlock) { HostWaitingMenuTextBlock->SetText(Final); }

@@ -132,6 +132,8 @@ protected:
     void HostMatchStart();
 
 private:
-    FTimerHandle DotsTimerHandle;
-    int32 DotCount = 1;
+    FTimerHandle MatchDotsTimerHandle;
+    FTimerHandle HostWaitingDotsTimerHandle;
+    int32 MatchDotCount = 1;
+    int32 HostWaitingDotCount = 1;
 };

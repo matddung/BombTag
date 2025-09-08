@@ -48,7 +48,7 @@ bool UMainMenuWidget::Initialize()
 
     if (HostMenuCreateButton)
     {
-        HostMenuCreateButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateMatch);
+        HostMenuCreateButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateHostMatch);
     }
 
     if (HostMenuBackButton)
@@ -61,14 +61,14 @@ bool UMainMenuWidget::Initialize()
         JoinMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
     }
 
-    if (HostWaitingMenuStartButton)
+    if (WaitingRoomMenuStartButton)
     {
-        HostWaitingMenuStartButton->OnClicked.AddDynamic(this, &UMainMenuWidget::HostMatchStart);
+        WaitingRoomMenuStartButton->OnClicked.AddDynamic(this, &UMainMenuWidget::WaitingRoomStart);
     }
 
-    if (HostWaitingMenuBackButton)
+    if (WaitingRoomMenuBackButton)
     {
-        HostWaitingMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+        WaitingRoomMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
     }
 
     if (MyRecordMenuBackButton)
@@ -84,8 +84,6 @@ void UMainMenuWidget::NativeConstruct()
     Super::NativeConstruct();
 
     GetWorld()->GetTimerManager().SetTimer(MatchDotsTimerHandle, this, &UMainMenuWidget::UpdateMatchMenuDots, 0.4f, true);
-
-    GetWorld()->GetTimerManager().SetTimer(HostWaitingDotsTimerHandle, this, &UMainMenuWidget::UpdateHostWaitingMenuDots, 0.4f, true);
 
     if (HostMenuPasswordCheckBox)
     {
@@ -133,9 +131,12 @@ void UMainMenuWidget::OpenMainMenu()
     }
 }
 
-void UMainMenuWidget::CreateMatch()
+void UMainMenuWidget::CreateHostMatch()
 {
-
+    if (MenuSwitcher && WaitingRoomMenu)
+    {
+        MenuSwitcher->SetActiveWidget(WaitingRoomMenu);
+    }
 }
 
 void UMainMenuWidget::UpdateMatchMenuDots()
@@ -160,16 +161,12 @@ void UMainMenuWidget::OnHostMenuPasswordCheckBoxChanged(bool bIsChecked)
     }
 }
 
-void UMainMenuWidget::UpdateHostWaitingMenuDots()
+void UMainMenuWidget::WaitingRoomStart()
 {
-    HostWaitingDotCount = (HostWaitingDotCount % 3) + 1;
-    const FString Dots = FString::ChrN(HostWaitingDotCount, TEXT('.'));
-    const FText Base = NSLOCTEXT("Match", "WaitingOther", "Waiting for Other");
-    const FText Final = FText::FromString(Base.ToString() + Dots);
-    if (HostWaitingMenuTextBlock) { HostWaitingMenuTextBlock->SetText(Final); }
+
 }
 
-void UMainMenuWidget::HostMatchStart()
+void UMainMenuWidget::WaitingRoomPlayerMenu()
 {
 
 }

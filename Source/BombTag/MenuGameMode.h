@@ -4,6 +4,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "MenuGameMode.generated.h"
 
+class APlayerController;
+class UUserWidget;
+
 UCLASS()
 class BOMBTAG_API AMenuGameMode : public AGameModeBase
 {
@@ -13,11 +16,8 @@ public:
 	AMenuGameMode();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	UPROPERTY(EditAnywhere, Category="Menu")
 	TSubclassOf<UUserWidget> MenuClass;
-
-	UPROPERTY()
-	TObjectPtr<UUserWidget> Menu;
 };

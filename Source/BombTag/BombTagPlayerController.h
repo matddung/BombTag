@@ -11,7 +11,7 @@ class UBorder;
 class UResultEntryWidget;
 
 UCLASS(abstract)
-class ABombTagPlayerController : public APlayerController
+class BOMBTAG_API ABombTagPlayerController : public APlayerController
 {
     GENERATED_BODY()
 
@@ -42,6 +42,9 @@ protected:
     TObjectPtr<UUserWidget> HUDWidget;
 
     UPROPERTY()
+    TObjectPtr<UUserWidget> MenuWidget;
+
+    UPROPERTY()
     TObjectPtr<UTextBlock> TimerText;
 
     UPROPERTY()
@@ -59,4 +62,7 @@ protected:
 public:
     UFUNCTION(Client, Reliable)
     void ClientShowResultScreen(TSubclassOf<UResultEntryWidget> ResultWidgetClass, bool bWinner);
+
+    UFUNCTION(Client, Reliable)
+    void ClientShowMainMenu(TSubclassOf<UUserWidget> InMenuClass);
 };

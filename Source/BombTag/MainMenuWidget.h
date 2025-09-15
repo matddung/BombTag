@@ -181,11 +181,9 @@ protected:
     void WaitingRoomStart();
 
     UFUNCTION()
-    void WaitingRoomPlayerMenu();
+    void WaitingRoomPlayerMenu(int32 PlayerIndex);
 
 private:
     FTimerHandle MatchDotsTimerHandle;
-    FTimerHandle HostWaitingDotsTimerHandle;
     int32 MatchDotCount = 1;
-    int32 HostWaitingDotCount = 1;
 };

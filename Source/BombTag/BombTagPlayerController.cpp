@@ -1,17 +1,17 @@
 #include "BombTagPlayerController.h"
+#include "BombTag.h"
+#include "ResultEntryWidget.h"
+#include "BombTagGameMode.h"
+#include "BombTagCharacter.h"
+#include "BombTagStateBase.h"
+
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
-#include "BombTag.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
-#include "BombTagGameMode.h"
-#include "BombTagCharacter.h"
-#include "BombTagStateBase.h"
-#include "ResultEntryWidget.h"
 
 ABombTagPlayerController::ABombTagPlayerController()
 {
@@ -140,6 +140,26 @@ void ABombTagPlayerController::ClientShowResultScreen_Implementation(TSubclassOf
         if (ResultWidget)
         {
             ResultWidget->AddToPlayerScreen();
+        }
+    }
+}
+
+void ABombTagPlayerController::ClientShowMainMenu_Implementation(TSubclassOf<UUserWidget> InMenuClass)
+{
+    if (IsLocalPlayerController() && InMenuClass)
+    {
+        if (!MenuWidget)
+        {
+            MenuWidget = CreateWidget<UUserWidget>(this, InMenuClass);
+        }
+        if (MenuWidget && !MenuWidget->IsInViewport())
+        {
+            MenuWidget->AddToViewport();
+
+            FInputModeUIOnly InputMode;
+            InputMode.SetWidgetToFocus(MenuWidget->TakeWidget());
+            SetInputMode(InputMode);
+            bShowMouseCursor = true;
         }
     }
 }

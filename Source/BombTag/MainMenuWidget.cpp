@@ -166,7 +166,30 @@ void UMainMenuWidget::WaitingRoomStart()
 
 }
 
-void UMainMenuWidget::WaitingRoomPlayerMenu()
+void UMainMenuWidget::WaitingRoomPlayerMenu(int32 PlayerIndex)
 {
+    UWidgetSwitcher* TargetSwitcher = nullptr;
 
+    switch (PlayerIndex)
+    {
+    case 1:
+        TargetSwitcher = WaitingRoomMenuPlayer1Switcher;
+        break;
+    case 2:
+        TargetSwitcher = WaitingRoomMenuPlayer2Switcher;
+        break;
+    case 3:
+        TargetSwitcher = WaitingRoomMenuPlayer3Switcher;
+        break;
+    case 4:
+        TargetSwitcher = WaitingRoomMenuPlayer4Switcher;
+        break;
+    default:
+        break;
+    }
+
+    if (TargetSwitcher)
+    {
+        TargetSwitcher->SetActiveWidgetIndex(1);
+    }
 }

@@ -1,5 +1,6 @@
 #include "MenuGameMode.h"
 #include "BombTagPlayerController.h"
+#include "BombTagGameInstance.h"
 
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
@@ -15,27 +16,15 @@ AMenuGameMode::AMenuGameMode()
     }
 }
 
-void AMenuGameMode::BeginPlay()
+void AMenuGameMode::PostLogin(APlayerController* NewPlayer)
 {
-    Super::BeginPlay();
+    Super::PostLogin(NewPlayer);
 
-    APlayerController* PC = GetWorld()->GetFirstPlayerController();
-    if (PC && MenuClass)
+    if (MenuClass)
     {
-        Menu = CreateWidget<UUserWidget>(PC, MenuClass);
-        if (Menu)
+        if (ABombTagPlayerController* BTPC = Cast<ABombTagPlayerController>(NewPlayer))
         {
-            Menu->AddToViewport();
-
-            FInputModeUIOnly InputMode;
-            InputMode.SetWidgetToFocus(Menu->TakeWidget());
-            PC->SetInputMode(InputMode);
-            PC->bShowMouseCursor = true;
+            BTPC->ClientShowMainMenu(MenuClass);
         }
-    }
-
-    if (ABombTagPlayerController* BTPC = Cast<ABombTagPlayerController>(PC))
-    {
-        BTPC->ShowHUDWidget();
     }
 }

@@ -21,7 +21,7 @@ public class BombTag : ModuleRules
 			"Slate"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] { "OnlineSubsystem", "OnlineSubsystemUtils" });
 
 		PublicIncludePaths.AddRange(new string[] {
 			"BombTag",

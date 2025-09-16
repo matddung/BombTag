@@ -92,6 +92,18 @@ protected:
     TObjectPtr<UButton> JoinMenuBackButton;
 
     // MyRecordMenu
+    UPROPERTY(meta = (BindWidgetOptional))
+    TObjectPtr<UTextBlock> MyRecordMenuNicknameText;
+
+    UPROPERTY(meta = (BindWidgetOptional))
+    TObjectPtr<UTextBlock> MyRecordMenuWinText;
+
+    UPROPERTY(meta = (BindWidgetOptional))
+    TObjectPtr<UTextBlock> MyRecordMenuLoseText;
+
+    UPROPERTY(meta = (BindWidgetOptional))
+    TObjectPtr<UTextBlock> MyRecordMenuRateText;
+
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> MyRecordMenuBackButton;
 
@@ -184,6 +196,8 @@ protected:
     void WaitingRoomPlayerMenu(int32 PlayerIndex);
 
 private:
+    void UpdateMyRecordMenu();
+
     FTimerHandle MatchDotsTimerHandle;
     int32 MatchDotCount = 1;
 };

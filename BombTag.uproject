@@ -32,7 +32,19 @@
 			"Enabled": true
 		},
 		{
+			"Name": "OnlineSubsystemNull",
+			"Enabled": false
+		},
+		{
 			"Name": "OnlineSubsystemEOS",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesEpicCommon",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesEOSGS",
 			"Enabled": true
 		},
 		{

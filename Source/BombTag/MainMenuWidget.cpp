@@ -1,4 +1,5 @@
 #include "MainMenuWidget.h"
+#include "BombTagGameInstance.h"
 
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
@@ -117,6 +118,8 @@ void UMainMenuWidget::OpenJoinMenu()
 
 void UMainMenuWidget::OpenMyRecordMenu()
 {
+    UpdateMyRecordMenu();
+
     if (MenuSwitcher && MyRecordMenu)
     {
         MenuSwitcher->SetActiveWidget(MyRecordMenu);
@@ -191,5 +194,50 @@ void UMainMenuWidget::WaitingRoomPlayerMenu(int32 PlayerIndex)
     if (TargetSwitcher)
     {
         TargetSwitcher->SetActiveWidgetIndex(1);
+    }
+}
+
+void UMainMenuWidget::UpdateMyRecordMenu()
+{
+    UBombTagGameInstance* GameInstance = nullptr;
+
+    if (UWorld* World = GetWorld())
+    {
+        GameInstance = World->GetGameInstance<UBombTagGameInstance>();
+    }
+
+    if (!GameInstance)
+    {
+        return;
+    }
+
+    const FString Nickname = GameInstance->GetPlayerNickname();
+    if (MyRecordMenuNicknameText)
+    {
+        const FText NicknameText = Nickname.IsEmpty()
+            ? NSLOCTEXT("MainMenu", "DefaultNickname", "Guest")
+            : FText::FromString(Nickname);
+        MyRecordMenuNicknameText->SetText(NicknameText);
+    }
+
+    int32 Win = 0;
+    int32 Lose = 0;
+    int32 TotalMatches = 0;
+    GameInstance->GetPlayerRecord(Win, Lose, TotalMatches);
+
+    if (MyRecordMenuWinText)
+    {
+        MyRecordMenuWinText->SetText(FText::FromString(FString::Printf(TEXT("Win : %d"), Win)));
+    }
+
+    if (MyRecordMenuLoseText)
+    {
+        MyRecordMenuLoseText->SetText(FText::FromString(FString::Printf(TEXT("Lose : %d"), Lose)));
+    }
+
+    if (MyRecordMenuRateText)
+    {
+        const float WinRate = TotalMatches > 0 ? (static_cast<float>(Win) / static_cast<float>(TotalMatches)) * 100.f : 0.f;
+        MyRecordMenuRateText->SetText(FText::FromString(FString::Printf(TEXT("Rate : %.1f%%"), WinRate)));
     }
 }

@@ -10,7 +10,7 @@ class UTextBlock;
 class UBorder;
 class UResultEntryWidget;
 
-UCLASS(abstract)
+UCLASS()
 class BOMBTAG_API ABombTagPlayerController : public APlayerController
 {
     GENERATED_BODY()

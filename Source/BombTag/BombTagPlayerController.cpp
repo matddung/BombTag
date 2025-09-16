@@ -148,16 +148,20 @@ void ABombTagPlayerController::ClientShowMainMenu_Implementation(TSubclassOf<UUs
 {
     if (IsLocalPlayerController() && InMenuClass)
     {
+        if (HUDWidget)
+        {
+            HUDWidget->RemoveFromParent();
+        }
         if (!MenuWidget)
         {
             MenuWidget = CreateWidget<UUserWidget>(this, InMenuClass);
         }
         if (MenuWidget && !MenuWidget->IsInViewport())
         {
-            MenuWidget->AddToViewport();
+            MenuWidget->AddToPlayerScreen(10);
 
             FInputModeUIOnly InputMode;
-            InputMode.SetWidgetToFocus(MenuWidget->TakeWidget());
+            InputMode.SetWidgetToFocus(MenuWidget->GetCachedWidget());
             SetInputMode(InputMode);
             bShowMouseCursor = true;
         }

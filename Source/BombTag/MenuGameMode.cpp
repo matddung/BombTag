@@ -1,6 +1,7 @@
 #include "MenuGameMode.h"
 #include "BombTagPlayerController.h"
 #include "BombTagGameInstance.h"
+#include "BombTagStateBase.h"
 
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
@@ -8,6 +9,7 @@
 AMenuGameMode::AMenuGameMode()
 {
     DefaultPawnClass = nullptr;
+    PlayerControllerClass = ABombTagPlayerController::StaticClass();
 
     static ConstructorHelpers::FClassFinder<UUserWidget> MenuBPClass(TEXT("/Game/UI/WBP_MainMenu"));
     if (MenuBPClass.Succeeded())

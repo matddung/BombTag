@@ -9,6 +9,7 @@ class UUserWidget;
 class UTextBlock;
 class UBorder;
 class UResultEntryWidget;
+class UBombTagGameInstance;
 
 UCLASS()
 class BOMBTAG_API ABombTagPlayerController : public APlayerController
@@ -58,6 +59,9 @@ protected:
     virtual void SetupInputComponent() override;
 
     virtual void Tick(float DeltaSeconds) override;
+
+    UFUNCTION(Server, Reliable)
+    void ServerSetPlayerNickname(const FString& Nickname);
 
 public:
     UFUNCTION(Client, Reliable)

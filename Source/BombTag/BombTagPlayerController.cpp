@@ -4,6 +4,7 @@
 #include "BombTagGameMode.h"
 #include "BombTagCharacter.h"
 #include "BombTagStateBase.h"
+#include "BombTagGameInstance.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
@@ -12,6 +13,7 @@
 #include "Widgets/Input/SVirtualJoystick.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
+#include "GameFramework/PlayerState.h"
 
 ABombTagPlayerController::ABombTagPlayerController()
 {
@@ -60,6 +62,18 @@ void ABombTagPlayerController::BeginPlay()
     Super::BeginPlay();
 
     ShowHUDWidget();
+
+    if (IsLocalPlayerController())
+    {
+        FString Nickname;
+        if (UBombTagGameInstance* GameInstance = Cast<UBombTagGameInstance>(GetGameInstance()))
+        {
+            Nickname = GameInstance->GetPlayerNickname();
+            Nickname.TrimStartAndEndInline();
+        }
+
+        ServerSetPlayerNickname(Nickname);
+    }
 
     if (SVirtualJoystick::ShouldDisplayTouchInterface() && IsLocalPlayerController())
     {
@@ -129,6 +143,22 @@ void ABombTagPlayerController::Tick(float DeltaSeconds)
             BorderFlashElapsed = 0.f;
             BorderFlash->SetRenderOpacity(0.f);
         }
+    }
+}
+
+void ABombTagPlayerController::ServerSetPlayerNickname_Implementation(const FString& Nickname)
+{
+    if (PlayerState)
+    {
+        FString NicknameToApply = Nickname;
+        NicknameToApply.TrimStartAndEndInline();
+
+        if (NicknameToApply.IsEmpty())
+        {
+            NicknameToApply = TEXT("Guest");
+        }
+
+        PlayerState->SetPlayerName(NicknameToApply);
     }
 }
 

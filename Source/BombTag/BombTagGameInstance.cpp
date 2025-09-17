@@ -94,6 +94,12 @@ void UBombTagGameInstance::SetPlayerNickname(const FString& NewNickname)
     FString SanitizedNickname = NewNickname;
     SanitizedNickname.TrimStartAndEndInline();
 
+    if (!IsValidNickname(SanitizedNickname))
+    {
+        UE_LOG(LogBombTag, Warning, TEXT("Attempted to set invalid nickname '%s'."), *SanitizedNickname);
+        return;
+    }
+
     if (PlayerSaveGame->Nickname.Equals(SanitizedNickname, ESearchCase::CaseSensitive))
     {
         return;
@@ -202,6 +208,8 @@ void UBombTagGameInstance::LoadOrCreatePlayerData()
 
         SavePlayerData();
     }
+
+    EnsureNicknameIsValid();
 }
 
 void UBombTagGameInstance::SavePlayerData()
@@ -215,4 +223,54 @@ void UBombTagGameInstance::SavePlayerData()
     {
         UE_LOG(LogBombTag, Warning, TEXT("Failed to save BombTag profile to slot %s"), PlayerSaveSlotName);
     }
+}
+
+void UBombTagGameInstance::EnsureNicknameIsValid()
+{
+    if (!PlayerSaveGame)
+    {
+        return;
+    }
+
+    FString SanitizedNickname = PlayerSaveGame->Nickname;
+    SanitizedNickname.TrimStartAndEndInline();
+
+    if (!SanitizedNickname.IsEmpty() && !IsValidNickname(SanitizedNickname))
+    {
+        UE_LOG(LogBombTag, Warning, TEXT("Loaded invalid nickname '%s'. Clearing saved value."), *SanitizedNickname);
+        SanitizedNickname.Reset();
+    }
+
+    if (PlayerSaveGame->Nickname != SanitizedNickname)
+    {
+        PlayerSaveGame->Nickname = SanitizedNickname;
+        SavePlayerData();
+    }
+}
+
+bool UBombTagGameInstance::IsValidNickname(const FString& Nickname) const
+{
+    const int32 Length = Nickname.Len();
+
+    if (Length < 4 || Length > 10)
+    {
+        return false;
+    }
+
+    for (const TCHAR Character : Nickname)
+    {
+        if (!IsAsciiAlphanumeric(Character))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool UBombTagGameInstance::IsAsciiAlphanumeric(TCHAR Character) const
+{
+    return (Character >= TEXT('0') && Character <= TEXT('9')) ||
+        (Character >= TEXT('A') && Character <= TEXT('Z')) ||
+        (Character >= TEXT('a') && Character <= TEXT('z'));
 }

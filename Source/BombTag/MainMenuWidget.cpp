@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 #include "Components/EditableTextBox.h"
 #include "Components/CheckBox.h"
+#include "Misc/Char.h"
 
 bool UMainMenuWidget::Initialize()
 {
@@ -77,6 +78,11 @@ bool UMainMenuWidget::Initialize()
         MyRecordMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
     }
 
+    if (NewNicknameMenuConfirmButton)
+    {
+        NewNicknameMenuConfirmButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ConfirmNewNickname);
+    }
+
     return true;
 }
 
@@ -89,6 +95,27 @@ void UMainMenuWidget::NativeConstruct()
     if (HostMenuPasswordCheckBox)
     {
         OnHostMenuPasswordCheckBoxChanged(HostMenuPasswordCheckBox->IsChecked());
+    }
+
+    bool bShouldShowNewNicknameMenu = false;
+
+    if (UWorld* World = GetWorld())
+    {
+        if (UBombTagGameInstance* GameInstance = World->GetGameInstance<UBombTagGameInstance>())
+        {
+            FString SanitizedNickname = GameInstance->GetPlayerNickname();
+            SanitizedNickname.TrimStartAndEndInline();
+            bShouldShowNewNicknameMenu = SanitizedNickname.IsEmpty();
+        }
+    }
+
+    if (bShouldShowNewNicknameMenu)
+    {
+        OpenNewNicknameMenu();
+    }
+    else
+    {
+        OpenMainMenu();
     }
 }
 
@@ -240,4 +267,115 @@ void UMainMenuWidget::UpdateMyRecordMenu()
         const float WinRate = TotalMatches > 0 ? (static_cast<float>(Win) / static_cast<float>(TotalMatches)) * 100.f : 0.f;
         MyRecordMenuRateText->SetText(FText::FromString(FString::Printf(TEXT("Rate : %.1f%%"), WinRate)));
     }
+}
+
+void UMainMenuWidget::OpenNewNicknameMenu()
+{
+    if (NewNicknameMenuNicknameTextBox)
+    {
+        UBombTagGameInstance* GameInstance = nullptr;
+        if (UWorld* World = GetWorld())
+        {
+            GameInstance = World->GetGameInstance<UBombTagGameInstance>();
+        }
+
+        const FString CurrentNickname = GameInstance ? GameInstance->GetPlayerNickname() : FString();
+        NewNicknameMenuNicknameTextBox->SetText(FText::FromString(CurrentNickname));
+        UpdateNewNicknameError(CurrentNickname);
+    }
+
+    if (MenuSwitcher && NewNicknameMenu)
+    {
+        MenuSwitcher->SetActiveWidget(NewNicknameMenu);
+    }
+}
+
+void UMainMenuWidget::ConfirmNewNickname()
+{
+    if (!NewNicknameMenuNicknameTextBox)
+    {
+        return;
+    }
+
+    FString EnteredNickname = NewNicknameMenuNicknameTextBox->GetText().ToString();
+    EnteredNickname.TrimStartAndEndInline();
+
+    UpdateNewNicknameError(EnteredNickname);
+
+    if (!IsValidNickname(EnteredNickname))
+    {
+        return;
+    }
+
+    if (UWorld* World = GetWorld())
+    {
+        if (UBombTagGameInstance* GameInstance = World->GetGameInstance<UBombTagGameInstance>())
+        {
+            GameInstance->SetPlayerNickname(EnteredNickname);
+        }
+    }
+
+    OpenMainMenu();
+}
+
+bool UMainMenuWidget::IsValidNickname(const FString& Nickname) const
+{
+    return GetNicknameValidationErrorText(Nickname).IsEmpty();
+}
+
+void UMainMenuWidget::OnNewNicknameTextChanged(const FText& NewText)
+{
+    UpdateNewNicknameError(NewText.ToString());
+}
+
+FText UMainMenuWidget::GetNicknameValidationErrorText(const FString& Nickname) const
+{
+    FString TrimmedNickname = Nickname;
+    TrimmedNickname.TrimStartAndEndInline();
+
+    if (TrimmedNickname.IsEmpty())
+    {
+        return NSLOCTEXT("MainMenu", "NicknameRequired", "Please enter your nickname");
+    }
+
+    const int32 Length = TrimmedNickname.Len();
+
+    if (Length < 4 || Length > 10)
+    {
+        return NSLOCTEXT("MainMenu", "NicknameTooShort", "Nickname must be at least 4 characters and no more than 10 characters");
+    }
+
+    for (const TCHAR Character : TrimmedNickname)
+    {
+        if (!IsAsciiAlphanumeric(Character))
+        {
+            return NSLOCTEXT("MainMenu", "NicknameInvalidCharacters", "Only English letters and numbers can be used in your nickname");
+        }
+    }
+
+    return FText::GetEmpty();
+}
+
+void UMainMenuWidget::UpdateNewNicknameError(const FString& Nickname)
+{
+    if (!NewNicknameMenuErrorText)
+    {
+        return;
+    }
+
+    const FText ValidationError = GetNicknameValidationErrorText(Nickname);
+
+    NewNicknameMenuErrorText->SetText(ValidationError);
+
+    if (!ValidationError.IsEmpty())
+    {
+        NewNicknameMenuErrorText->SetColorAndOpacity(FSlateColor(FLinearColor::Red));
+    }
+}
+
+bool UMainMenuWidget::IsAsciiAlphanumeric(TCHAR Character) const
+{
+    return (Character >= TEXT('0') && Character <= TEXT('9')) ||
+        (Character >= TEXT('A') && Character <= TEXT('Z')) ||
+        (Character >= TEXT('a') && Character <= TEXT('z'));
 }

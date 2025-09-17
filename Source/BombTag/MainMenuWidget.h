@@ -42,6 +42,9 @@ protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UWidget> WaitingRoomMenu;
 
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UWidget> NewNicknameMenu;
+
     // MenuButton
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> MatchButton;
@@ -139,29 +142,40 @@ protected:
     TObjectPtr<UWidgetSwitcher> WaitingRoomMenuPlayer4Switcher;
 
     UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer1IDTextBox;
+    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer1IDText;
 
     UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer2IDTextBox;
+    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer2IDText;
 
     UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer3IDTextBox;
+    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer3IDText;
 
     UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer4IDTextBox;
+    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer4IDText;
 
     UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer1RecordTextBox;
+    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer1RecordText;
 
     UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer2RecordTextBox;
+    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer2RecordText;
 
     UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer3RecordTextBox;
+    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer3RecordText;
 
     UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer4RecordTextBox;
+    TObjectPtr<UTextBlock> WaitingRoomMenuPlayer4RecordText;
 
+    // NewNicknameMenu
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UEditableTextBox> NewNicknameMenuNicknameTextBox;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UButton> NewNicknameMenuConfirmButton;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UTextBlock> NewNicknameMenuErrorText;
+
+private:
     UFUNCTION()
     void OpenMatchMenu();
 
@@ -195,8 +209,21 @@ protected:
     UFUNCTION()
     void WaitingRoomPlayerMenu(int32 PlayerIndex);
 
-private:
     void UpdateMyRecordMenu();
+
+    UFUNCTION()
+    void OpenNewNicknameMenu();
+
+    UFUNCTION()
+    void ConfirmNewNickname();
+
+    UFUNCTION()
+    void OnNewNicknameTextChanged(const FText& NewText);
+
+    bool IsValidNickname(const FString& Nickname) const;
+    FText GetNicknameValidationErrorText(const FString& Nickname) const;
+    void UpdateNewNicknameError(const FString& Nickname);
+    bool IsAsciiAlphanumeric(TCHAR Character) const;
 
     FTimerHandle MatchDotsTimerHandle;
     int32 MatchDotCount = 1;

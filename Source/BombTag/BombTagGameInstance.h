@@ -47,6 +47,9 @@ private:
 
     void LoadOrCreatePlayerData();
     void SavePlayerData();
+    void EnsureNicknameIsValid();
+    bool IsValidNickname(const FString& Nickname) const;
+    bool IsAsciiAlphanumeric(TCHAR Character) const;
 
     IOnlineIdentityPtr IdentityInterface;
     FDelegateHandle LoginCompleteDelegateHandle;

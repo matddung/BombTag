@@ -58,6 +58,11 @@ bool UMainMenuWidget::Initialize()
         HostMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
     }
 
+    if (JoinMenuJoinButton)
+    {
+        JoinMenuJoinButton->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinMatch);
+    }
+
     if (JoinMenuBackButton)
     {
         JoinMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
@@ -163,6 +168,29 @@ void UMainMenuWidget::OpenMainMenu()
 
 void UMainMenuWidget::CreateHostMatch()
 {
+    FString DesiredName;
+    if (HostMenuTitleTextBox)
+    {
+        DesiredName = HostMenuTitleTextBox->GetText().ToString();
+        DesiredName.TrimStartAndEndInline();
+    }
+
+    FString DesiredPassword;
+    const bool bUsePassword = HostMenuPasswordCheckBox && HostMenuPasswordCheckBox->IsChecked();
+    if (bUsePassword && HostMenuPasswordTextBox)
+    {
+        DesiredPassword = HostMenuPasswordTextBox->GetText().ToString();
+        DesiredPassword.TrimStartAndEndInline();
+    }
+
+    if (UWorld* World = GetWorld())
+    {
+        if (UBombTagGameInstance* GameInstance = World->GetGameInstance<UBombTagGameInstance>())
+        {
+            GameInstance->HostOnlineSession(DesiredName, DesiredPassword, 4, false);
+        }
+    }
+
     if (MenuSwitcher && WaitingRoomMenu)
     {
         MenuSwitcher->SetActiveWidget(WaitingRoomMenu);
@@ -180,7 +208,29 @@ void UMainMenuWidget::UpdateMatchMenuDots()
 
 void UMainMenuWidget::JoinMatch()
 {
+    FString DesiredName;
+    if (JoinMenuTitleTextBox)
+    {
+        DesiredName = JoinMenuTitleTextBox->GetText().ToString();
+        DesiredName.TrimStartAndEndInline();
+    }
 
+    FString DesiredPassword;
+    if (JoinMenuPasswordTextBox)
+    {
+        DesiredPassword = JoinMenuPasswordTextBox->GetText().ToString();
+        DesiredPassword.TrimStartAndEndInline();
+    }
+
+    if (UWorld* World = GetWorld())
+    {
+        if (UBombTagGameInstance* GameInstance = World->GetGameInstance<UBombTagGameInstance>())
+        {
+            GameInstance->FindAndJoinSession(DesiredName, DesiredPassword, false);
+        }
+    }
+
+    OpenMatchMenu();
 }
 
 void UMainMenuWidget::OnHostMenuPasswordCheckBoxChanged(bool bIsChecked)
@@ -193,7 +243,13 @@ void UMainMenuWidget::OnHostMenuPasswordCheckBoxChanged(bool bIsChecked)
 
 void UMainMenuWidget::WaitingRoomStart()
 {
-
+    if (UWorld* World = GetWorld())
+    {
+        if (UBombTagGameInstance* GameInstance = World->GetGameInstance<UBombTagGameInstance>())
+        {
+            GameInstance->StartHostedMatch();
+        }
+    }
 }
 
 void UMainMenuWidget::WaitingRoomPlayerMenu(int32 PlayerIndex)
